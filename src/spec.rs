@@ -8,12 +8,6 @@ pub struct PageSpec {
     pub path: String,
 }
 
-impl PageSpec {
-    pub fn path(&self) -> &str {
-        &self.path
-    }
-}
-
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct ManifestSpec {
     title: String,
@@ -56,7 +50,7 @@ mod tests {
 
     #[test]
     fn read_manifest() -> anyhow::Result<()> {
-        let manifest = fs::read_to_string("spec/manifest.toml")?;
+        let manifest = fs::read_to_string("spec1/manifest.toml")?;
         let manifest: ManifestSpec = toml::from_str(&manifest)?;
 
         let spec = ManifestSpec {
@@ -84,7 +78,7 @@ mod tests {
 
     #[test]
     fn read_section() -> anyhow::Result<()> {
-        let section = fs::read_to_string("spec/d1/section.toml")?;
+        let section = fs::read_to_string("spec1/d1/section.toml")?;
         let section: SectionSpec = toml::from_str(&section)?;
 
         let spec = SectionSpec {
@@ -109,7 +103,7 @@ mod tests {
 
     #[test]
     fn read_subsection() -> anyhow::Result<()> {
-        let subsection = fs::read_to_string("spec/d1/s1/subsection.toml")?;
+        let subsection = fs::read_to_string("spec1/d1/s1/subsection.toml")?;
         let subsection: SubectionSpec = toml::from_str(&subsection)?;
 
         let spec = SubectionSpec {
