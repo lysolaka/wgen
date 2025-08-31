@@ -1,0 +1,12 @@
+[section]
+name = "D1 section"
+desc = "Shit section"
+
+[[page]]
+name = "one MD"
+desc = "The first page here"
+path = "1.md"
+
+[[page]]
+name = "2nd markdown"
+path = "2.md"

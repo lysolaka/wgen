@@ -1,0 +1,15 @@
+title = "WGEN Webpage"
+append_title = false
+
+main_page = "index.md"
+
+href_prepend = "/~home"
+
+[[page]]
+name = "First page 1.md"
+desc = "Generic description"
+path = "1.md"
+
+[[page]]
+name = "Second page in the root"
+path = "2.md"

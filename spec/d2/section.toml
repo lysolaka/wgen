@@ -1,0 +1,8 @@
+[section]
+name = "The D2 section"
+
+[[page]]
+name = "The only one"
+desc = "there will be no more pages"
+path = "1.md"
+

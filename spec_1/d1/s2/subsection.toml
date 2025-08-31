@@ -1,0 +1,12 @@
+[subsection]
+name = "S2 sub"
+desc = "Shit"
+
+[[page]]
+name = "1 EMDE"
+desc = "A page"
+path = "1.md"
+
+[[page]]
+name = "second md"
+path = "2.md"

@@ -1,0 +1,12 @@
+[section]
+name = "D1 section"
+desc = "Could be no description"
+
+[[page]]
+name = "D1-1"
+desc = "there will be more ones"
+path = "1.md"
+
+[[page]]
+name = "Second page in the d1 section"
+path = "2.md"

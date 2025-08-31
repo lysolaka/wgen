@@ -1,0 +1,11 @@
+[subsection]
+name = "subsection s1"
+
+[[page]]
+name = "D1-S1-1"
+desc = "this is the most 1's"
+path = "1.md"
+
+[[page]]
+name = "Second page in the d1/s1 subsection"
+path = "2.md"

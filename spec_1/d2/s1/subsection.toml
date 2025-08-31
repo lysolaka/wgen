@@ -1,0 +1,8 @@
+[subsection]
+name = "d1/S1 subsection"
+desc = "SZAJSE"
+
+[[page]]
+name = "1 MD"
+desc = "The first and only page here"
+path = "1.md"
