@@ -2,7 +2,7 @@
 
 mod spec;
 mod tree;
-mod discover;
+// mod discover;
 
 fn main() {
     println!("Hello, world!");
