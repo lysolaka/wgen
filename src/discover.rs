@@ -1,8 +1,12 @@
+use std::fs;
 use std::path::{Path, PathBuf};
+
+use crate::spec::*;
+use crate::tree;
 
 #[derive(Debug, PartialEq)]
 pub struct Structure {
-    root: PathBuf,
+    pub root: PathBuf,
     sections: Vec<Section>,
 }
 
@@ -23,10 +27,47 @@ impl Structure {
                 sections,
             }),
             Err(e) => {
-                log::error!("Fetching the tree failed: {}", e);
-                anyhow::bail!("fetching the tree structure failed")
+                anyhow::bail!("fetching the tree failed: {}", e)
             }
         }
+    }
+
+    pub fn into_tree(self) -> anyhow::Result<tree::Tree> {
+        todo!()
+    }
+}
+
+impl Section {
+    fn read_spec(self, root: &Path) -> anyhow::Result<tree::Section> {
+        let spec = fs::read_to_string(&self.spec)?;
+        let spec: SectionSpec = toml::from_str(&spec)?;
+
+        let subsections: Vec<tree::Subsection> = self
+            .subsections
+            .into_iter()
+            .map(|s| {
+                let path = s.0.clone();
+                match s.read_spec(root) {
+                    Ok(sub) => Ok(sub),
+                    Err(e) => {
+                        log::warn!("Could not read the spec {}: {}", path.display(), e);
+                        Err(())
+                    }
+                }
+            })
+            .flatten()
+            .collect();
+        let location = self.spec.parent().unwrap_or(Path::new(""));
+        Ok(tree::Section::from_spec(spec, subsections, location, root))
+    }
+}
+
+impl Subsection {
+    fn read_spec(self, root: &Path) -> anyhow::Result<tree::Subsection> {
+        let spec = fs::read_to_string(&self.0)?;
+        let spec: SubsectionSpec = toml::from_str(&spec)?;
+        let location = self.0.parent().unwrap_or(Path::new(""));
+        Ok(tree::Subsection::from_spec(spec, location, root))
     }
 }
 

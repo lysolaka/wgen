@@ -10,35 +10,35 @@ pub struct PageSpec {
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct ManifestSpec {
-    title: String,
+    pub title: String,
     #[serde(default)]
-    append_title: bool,
-    main_page: String,
+    pub append_title: bool,
+    pub main_page: String,
     #[serde(default)]
-    href_prepend: String,
+    pub href_prepend: String,
     #[serde(rename = "page")]
-    pages: Vec<PageSpec>,
+    pub pages: Vec<PageSpec>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct SectionSpec {
-    section: SectionField,
+    pub section: SectionField,
     #[serde(rename = "page")]
-    pages: Vec<PageSpec>,
+    pub pages: Vec<PageSpec>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
-pub struct SubectionSpec {
-    subsection: SectionField,
+pub struct SubsectionSpec {
+    pub subsection: SectionField,
     #[serde(rename = "page")]
-    pages: Vec<PageSpec>,
+    pub pages: Vec<PageSpec>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct SectionField {
-    name: String,
+    pub name: String,
     #[serde(default)]
-    desc: String,
+    pub desc: String,
 }
 
 #[cfg(test)]
@@ -104,9 +104,9 @@ mod tests {
     #[test]
     fn read_subsection() -> anyhow::Result<()> {
         let subsection = fs::read_to_string("spec1/d1/s1/subsection.toml")?;
-        let subsection: SubectionSpec = toml::from_str(&subsection)?;
+        let subsection: SubsectionSpec = toml::from_str(&subsection)?;
 
-        let spec = SubectionSpec {
+        let spec = SubsectionSpec {
             subsection: SectionField { name: "subsection s1".to_string(), desc: "".to_string() },
             pages: vec![
                 PageSpec {
