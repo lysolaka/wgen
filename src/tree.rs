@@ -135,17 +135,42 @@ impl Section {
     }
 }
 
+#[derive(Debug, PartialEq)]
 enum TreeEntry {
     Page(Page),
     Section(Section),
 }
 
+#[derive(Debug, PartialEq)]
 pub struct Tree {
     root: PathBuf,
     title: String,
     append_title: bool,
     href_prepend: String,
     entries: Vec<TreeEntry>,
+}
+
+impl Tree {
+    pub fn from_spec(spec: ManifestSpec, root: PathBuf, sections: Vec<Section>) -> Self {
+        let pages = spec
+            .pages
+            .into_iter()
+            .map(|p| TreeEntry::Page(Page::from_spec(p, &root, &root)));
+
+        let entries: Vec<TreeEntry> = sections
+            .into_iter()
+            .map(|s| TreeEntry::Section(s))
+            .chain(pages)
+            .collect();
+
+        Self {
+            root,
+            title: spec.title,
+            append_title: spec.append_title,
+            href_prepend: spec.href_prepend,
+            entries,
+        }
+    }
 }
 
 #[cfg(test)]

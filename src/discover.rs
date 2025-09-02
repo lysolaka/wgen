@@ -33,7 +33,26 @@ impl Structure {
     }
 
     pub fn into_tree(self) -> anyhow::Result<tree::Tree> {
-        todo!()
+        let spec = fs::read_to_string(&self.root.join("manifest.toml"))?;
+        let spec: ManifestSpec = toml::from_str(&spec)?;
+
+        let sections: Vec<tree::Section> = self
+            .sections
+            .into_iter()
+            .map(|s| {
+                let path = s.spec.clone();
+                match s.read_spec(&self.root) {
+                    Ok(sub) => Ok(sub),
+                    Err(e) => {
+                        log::warn!("Could not read the spec {}: {}", path.display(), e);
+                        Err(())
+                    }
+                }
+            })
+            .flatten()
+            .collect();
+        
+        Ok(tree::Tree::from_spec(spec, self.root, sections))
     }
 }
 
