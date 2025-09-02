@@ -5,7 +5,7 @@ use chrono::{DateTime, Utc};
 
 use crate::spec::*;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug)]
 pub struct Page {
     name: String,
     desc: String,
@@ -41,6 +41,12 @@ impl Page {
             href,
             date,
         }
+    }
+}
+
+impl PartialEq for Page {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name && self.desc == other.desc && self.path == other.path && self.href == other.href
     }
 }
 
