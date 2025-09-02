@@ -1,3 +1,6 @@
+// Copyright 2025 Szymon Sztuka (lysolaka)
+// Distributed under the terms of the GNU General Public License v3 or later
+
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Clone, PartialEq)]
