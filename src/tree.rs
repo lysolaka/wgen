@@ -46,7 +46,10 @@ impl Page {
 
 impl PartialEq for Page {
     fn eq(&self, other: &Self) -> bool {
-        self.name == other.name && self.desc == other.desc && self.path == other.path && self.href == other.href
+        self.name == other.name
+            && self.desc == other.desc
+            && self.path == other.path
+            && self.href == other.href
     }
 }
 
@@ -79,49 +82,6 @@ impl Subsection {
             path: location.to_path_buf(),
             href,
             pages,
-        }
-    }
-
-    #[cfg(test)]
-    pub fn subsection_read_spec1_expected() -> Self {
-        Self {
-            name: "subsection s1".to_string(),
-            desc: "".to_string(),
-            path: PathBuf::from("spec1/d1/s1"),
-            href: "/d1/s1/".to_string(),
-            pages: vec![
-                Page {
-                    name: "D1-S1-1".to_string(),
-                    desc: "this is the most 1's".to_string(),
-                    path: PathBuf::from("spec1/d1/s1/1.md"),
-                    href: "/d1/s1/1.html".to_string(),
-                    date: "1.09.2025 20:34".to_string(),
-                },
-                Page {
-                    name: "Second page in the d1/s1 subsection".to_string(),
-                    desc: "".to_string(),
-                    path: PathBuf::from("spec1/d1/s1/2.md"),
-                    href: "/d1/s1/2.html".to_string(),
-                    date: "1.09.2025 20:34".to_string(),
-                },
-            ],
-        }
-    }
-
-    #[cfg(test)]
-    pub fn subsection_read_spec2_expected() -> Self {
-        Self {
-            name: "d1/S1 subsection".to_string(),
-            desc: "SZAJSE".to_string(),
-            path: PathBuf::from("spec2/d2/s1"),
-            href: "/spec2/d2/s1/".to_string(),
-            pages: vec![Page {
-                name: "1 MD".to_string(),
-                desc: "The first and only page here".to_string(),
-                path: PathBuf::from("spec2/d2/s1/1.md"),
-                href: "/spec2/d2/s1/1.html".to_string(),
-                date: "1.09.2025 20:34".to_string(),
-            }],
         }
     }
 }
@@ -226,5 +186,121 @@ mod tests {
         };
 
         assert_eq!(page, exp);
+    }
+}
+
+#[cfg(test)]
+impl Subsection {
+    pub fn subsection_read_spec1_expected() -> Self {
+        Self {
+            name: "subsection s1".to_string(),
+            desc: "".to_string(),
+            path: PathBuf::from("spec1/d1/s1"),
+            href: "/d1/s1/".to_string(),
+            pages: vec![
+                Page {
+                    name: "D1-S1-1".to_string(),
+                    desc: "this is the most 1's".to_string(),
+                    path: PathBuf::from("spec1/d1/s1/1.md"),
+                    href: "/d1/s1/1.html".to_string(),
+                    date: "1.09.2025 20:34".to_string(),
+                },
+                Page {
+                    name: "Second page in the d1/s1 subsection".to_string(),
+                    desc: "".to_string(),
+                    path: PathBuf::from("spec1/d1/s1/2.md"),
+                    href: "/d1/s1/2.html".to_string(),
+                    date: "1.09.2025 20:34".to_string(),
+                },
+            ],
+        }
+    }
+
+    pub fn subsection_read_spec2_expected() -> Self {
+        Self {
+            name: "d1/S1 subsection".to_string(),
+            desc: "SZAJSE".to_string(),
+            path: PathBuf::from("spec2/d2/s1"),
+            href: "/d2/s1/".to_string(),
+            pages: vec![Page {
+                name: "1 MD".to_string(),
+                desc: "The first and only page here".to_string(),
+                path: PathBuf::from("spec2/d2/s1/1.md"),
+                href: "/d2/s1/1.html".to_string(),
+                date: "1.09.2025 20:34".to_string(),
+            }],
+        }
+    }
+}
+
+#[cfg(test)]
+impl Section {
+    pub fn section_read_spec_expected() -> Self {
+        Self {
+            name: "D1 section".to_string(),
+            desc: "Shit section".to_string(),
+            path: PathBuf::from("spec2/d1"),
+            href: "/d1/".to_string(),
+            entries: vec![
+                SectionEntry::Subsection(Subsection {
+                    name: "S1 subsection".to_string(),
+                    desc: "Shit shit shit".to_string(),
+                    path: PathBuf::from("spec2/d1/s1"),
+                    href: "/d1/s1/".to_string(),
+                    pages: vec![
+                        Page {
+                            name: "1 MD".to_string(),
+                            desc: "The first page here".to_string(),
+                            path: PathBuf::from("spec2/d1/s1/1.md"),
+                            href: "/d1/s1/1.html".to_string(),
+                            date: "1.09.2025 20:34".to_string(),
+                        },
+                        Page {
+                            name: "2nd md".to_string(),
+                            desc: "".to_string(),
+                            path: PathBuf::from("spec2/d1/s1/2.md"),
+                            href: "/d1/s1/2.html".to_string(),
+                            date: "1.09.2025 20:34".to_string(),
+                        },
+                    ],
+                }),
+                SectionEntry::Subsection(Subsection {
+                    name: "S2 sub".to_string(),
+                    desc: "Shit".to_string(),
+                    path: PathBuf::from("spec2/d1/s2"),
+                    href: "/d1/s2/".to_string(),
+                    pages: vec![
+                        Page {
+                            name: "1 EMDE".to_string(),
+                            desc: "A page".to_string(),
+                            path: PathBuf::from("spec2/d1/s2/1.md"),
+                            href: "/d1/s2/1.html".to_string(),
+                            date: "1.09.2025 20:34".to_string(),
+                        },
+                        Page {
+                            name: "second md".to_string(),
+                            desc: "".to_string(),
+                            path: PathBuf::from("spec2/d1/s2/2.md"),
+                            href: "/d1/s2/2.html".to_string(),
+                            date: "1.09.2025 20:34".to_string(),
+                        },
+                    ],
+                }),
+                SectionEntry::Page(Page {
+                    name: "one MD".to_string(),
+                    desc: "The first page here".to_string(),
+                    path: PathBuf::from("spec2/d1/1.md"),
+                    href: "/d1/1.html".to_string(),
+                    date: "1.09.2025 20:34".to_string(),
+                }),
+                SectionEntry::Page(Page {
+                    name: "2nd markdown".to_string(),
+                    desc: "".to_string(),
+                    path: PathBuf::from("spec2/d1/2.md"),
+                    href: "/d1/2.html".to_string(),
+                    date: "1.09.2025 20:34".to_string(),
+                }),
+            ],
+        }
     }
 }

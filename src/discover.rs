@@ -190,9 +190,8 @@ mod tests {
 
     #[test]
     fn subsection_read_spec1() -> anyhow::Result<()> {
-        let root = Path::new("spec1");
         let subsection = Subsection(PathBuf::from("spec1/d1/s1/subsection.toml"));
-        let subsection = subsection.read_spec(root)?;
+        let subsection = subsection.read_spec(Path::new("spec1"))?;
         let expect = tree::Subsection::subsection_read_spec1_expected();
 
         assert_eq!(subsection, expect);
@@ -201,13 +200,27 @@ mod tests {
 
     #[test]
     fn subsection_read_spec2() -> anyhow::Result<()> {
-        let root = Path::new("spec1");
         let subsection = Subsection(PathBuf::from("spec2/d2/s1/subsection.toml"));
-        let subsection = subsection.read_spec(root)?;
+        let subsection = subsection.read_spec(Path::new("spec2"))?;
         let expect = tree::Subsection::subsection_read_spec2_expected();
 
         assert_eq!(subsection, expect);
+        Ok(())
+    }
 
+    #[test]
+    fn section_read_spec() -> anyhow::Result<()> {
+        let section = Section {
+            spec: PathBuf::from("spec2/d1/section.toml"),
+            subsections: vec![
+                Subsection(PathBuf::from("spec2/d1/s1/subsection.toml")),
+                Subsection(PathBuf::from("spec2/d1/s2/subsection.toml")),
+            ],
+        };
+        let section = section.read_spec(Path::new("spec2"))?;
+        let expect = tree::Section::section_read_spec_expected();
+
+        assert_eq!(section, expect);
         Ok(())
     }
 }
