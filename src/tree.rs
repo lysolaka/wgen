@@ -18,9 +18,9 @@ impl Page {
     pub fn from_spec(spec: PageSpec, location: &Path, root: &Path) -> Self {
         let path = location.join(&spec.path);
         let href = if let Ok(p) = path.strip_prefix(root) {
-            format!("/{}", p.display())
+            format!("/{}", p.with_extension("html").display())
         } else {
-            format!("/{}", path.display())
+            format!("/{}", path.with_extension("html").display())
         };
 
         let date = match fs::metadata(&path) {
@@ -88,14 +88,14 @@ impl Subsection {
                     name: "D1-S1-1".to_string(),
                     desc: "this is the most 1's".to_string(),
                     path: PathBuf::from("spec1/d1/s1/1.md"),
-                    href: "/d1/s1/1.md".to_string(),
+                    href: "/d1/s1/1.html".to_string(),
                     date: "1.09.2025 20:34".to_string(),
                 },
                 Page {
                     name: "Second page in the d1/s1 subsection".to_string(),
                     desc: "".to_string(),
                     path: PathBuf::from("spec1/d1/s1/2.md"),
-                    href: "/d1/s1/2.md".to_string(),
+                    href: "/d1/s1/2.html".to_string(),
                     date: "1.09.2025 20:34".to_string(),
                 },
             ],
@@ -113,7 +113,7 @@ impl Subsection {
                 name: "1 MD".to_string(),
                 desc: "The first and only page here".to_string(),
                 path: PathBuf::from("spec2/d2/s1/1.md"),
-                href: "/spec2/d2/s1/1.md".to_string(),
+                href: "/spec2/d2/s1/1.html".to_string(),
                 date: "1.09.2025 20:34".to_string(),
             }],
         }
@@ -203,7 +203,7 @@ mod tests {
             name: "Imaginary Name".to_string(),
             desc: "Hello!".to_string(),
             path: PathBuf::from("in/s1/imaginary_file.md"),
-            href: "/s1/imaginary_file.md".to_string(),
+            href: "/s1/imaginary_file.html".to_string(),
             date: "Unknown".to_string(),
         };
 
@@ -215,7 +215,7 @@ mod tests {
             name: "Imaginary Name".to_string(),
             desc: "Hello!".to_string(),
             path: PathBuf::from("imaginary_file.md"),
-            href: "/imaginary_file.md".to_string(),
+            href: "/imaginary_file.html".to_string(),
             date: "Unknown".to_string(),
         };
 
