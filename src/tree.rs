@@ -104,7 +104,7 @@ pub struct Section {
 impl Section {
     pub fn from_spec(
         spec: SectionSpec,
-        subsections: Vec<Subsection>,
+        subsections: impl Iterator<Item = Subsection>,
         location: &Path,
         root: &Path,
     ) -> Self {
@@ -120,7 +120,6 @@ impl Section {
             .map(|p| SectionEntry::Page(Page::from_spec(p, location, root)));
 
         let entries: Vec<SectionEntry> = subsections
-            .into_iter()
             .map(|s| SectionEntry::Subsection(s))
             .chain(pages)
             .collect();
@@ -151,14 +150,13 @@ pub struct Tree {
 }
 
 impl Tree {
-    pub fn from_spec(spec: ManifestSpec, root: PathBuf, sections: Vec<Section>) -> Self {
+    pub fn from_spec(spec: ManifestSpec, root: PathBuf, sections: impl Iterator<Item = Section>) -> Self {
         let pages = spec
             .pages
             .into_iter()
             .map(|p| TreeEntry::Page(Page::from_spec(p, &root, &root)));
 
         let entries: Vec<TreeEntry> = sections
-            .into_iter()
             .map(|s| TreeEntry::Section(s))
             .chain(pages)
             .collect();

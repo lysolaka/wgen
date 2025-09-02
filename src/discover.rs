@@ -36,10 +36,10 @@ impl Structure {
         let spec = fs::read_to_string(&self.root.join("manifest.toml"))?;
         let spec: ManifestSpec = toml::from_str(&spec)?;
 
-        let sections: Vec<tree::Section> = self
+        let sections = self
             .sections
             .into_iter()
-            .map(|s| {
+            .flat_map(|s| {
                 let path = s.spec.clone();
                 match s.read_spec(&self.root) {
                     Ok(sub) => Ok(sub),
@@ -48,11 +48,9 @@ impl Structure {
                         Err(())
                     }
                 }
-            })
-            .flatten()
-            .collect();
+            });
         
-        Ok(tree::Tree::from_spec(spec, self.root, sections))
+        Ok(tree::Tree::from_spec(spec, self.root.clone(), sections))
     }
 }
 
@@ -61,10 +59,10 @@ impl Section {
         let spec = fs::read_to_string(&self.spec)?;
         let spec: SectionSpec = toml::from_str(&spec)?;
 
-        let subsections: Vec<tree::Subsection> = self
+        let subsections = self
             .subsections
             .into_iter()
-            .map(|s| {
+            .flat_map(|s| {
                 let path = s.0.clone();
                 match s.read_spec(root) {
                     Ok(sub) => Ok(sub),
@@ -73,9 +71,8 @@ impl Section {
                         Err(())
                     }
                 }
-            })
-            .flatten()
-            .collect();
+            });
+
         let location = self.spec.parent().unwrap_or(Path::new(""));
         Ok(tree::Section::from_spec(spec, subsections, location, root))
     }
