@@ -2,6 +2,10 @@
 name = "wgen"
 version = "0.1.0"
 edition = "2024"
+license = "GPL-3.0-or-later"
+description = "A very \"limited\" static website generator"
+repository = "https://github.com/lysolaka/wgen"
+readme = "README.md"
 
 [dependencies]
 anyhow = "1.0.99"
