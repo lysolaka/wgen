@@ -187,4 +187,27 @@ mod tests {
         assert_eq!(structure, expect);
         Ok(())
     }
+
+    #[test]
+    fn subsection_read_spec1() -> anyhow::Result<()> {
+        let root = Path::new("spec1");
+        let subsection = Subsection(PathBuf::from("spec1/d1/s1/subsection.toml"));
+        let subsection = subsection.read_spec(root)?;
+        let expect = tree::Subsection::subsection_read_spec1_expected();
+
+        assert_eq!(subsection, expect);
+        Ok(())
+    }
+
+    #[test]
+    fn subsection_read_spec2() -> anyhow::Result<()> {
+        let root = Path::new("spec1");
+        let subsection = Subsection(PathBuf::from("spec2/d2/s1/subsection.toml"));
+        let subsection = subsection.read_spec(root)?;
+        let expect = tree::Subsection::subsection_read_spec2_expected();
+
+        assert_eq!(subsection, expect);
+
+        Ok(())
+    }
 }
