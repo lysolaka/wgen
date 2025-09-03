@@ -24,7 +24,7 @@ fn main() -> anyhow::Result<()> {
         ColorChoice::Auto,
     );
 
-    let structure = discover::Structure::collect_from(std::path::Path::new("spec2"))?;
+    let structure = discover::Structure::collect_from(std::path::Path::new("spec1"))?;
     let tree = structure.into_tree()?;
 
     println!("{:#?}", tree);

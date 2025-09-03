@@ -45,6 +45,10 @@ impl Page {
             date,
         }
     }
+
+    fn href_prepend(&mut self, string: &str) {
+        self.href.insert_str(0, string);
+    }
 }
 
 impl PartialEq for Page {
@@ -89,12 +93,28 @@ impl Subsection {
             pages,
         }
     }
+
+    fn href_prepend(&mut self, string: &str) {
+        self.href.insert_str(0, string);
+        for p in self.pages.iter_mut() {
+            p.href_prepend(string);
+        }
+    }
 }
 
 #[derive(Debug, PartialEq)]
 enum SectionEntry {
     Page(Page),
     Subsection(Subsection),
+}
+
+impl SectionEntry {
+    fn href_prepend(&mut self, string: &str) {
+        match self {
+            SectionEntry::Page(page) => page.href_prepend(string),
+            SectionEntry::Subsection(subsection) => subsection.href_prepend(string),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -139,6 +159,13 @@ impl Section {
             entries,
         }
     }
+
+    fn href_prepend(&mut self, string: &str) {
+        self.href.insert_str(0, string);
+        for e in self.entries.iter_mut() {
+            e.href_prepend(string);
+        }
+    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -147,12 +174,20 @@ enum TreeEntry {
     Section(Section),
 }
 
+impl TreeEntry {
+    fn href_prepend(&mut self, string: &str) {
+        match self {
+            TreeEntry::Page(page) => page.href_prepend(string),
+            TreeEntry::Section(section) => section.href_prepend(string),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub struct Tree {
     root: PathBuf,
     title: String,
     append_title: bool,
-    href_prepend: String,
     entries: Vec<TreeEntry>,
 }
 
@@ -174,12 +209,20 @@ impl Tree {
             .chain(pages)
             .collect();
 
-        Self {
+        let mut s = Self {
             root,
             title: spec.title,
             append_title: spec.append_title,
-            href_prepend: spec.href_prepend,
             entries,
+        };
+
+        s.href_prepend(&spec.href_prepend);
+        s
+    }
+
+    fn href_prepend(&mut self, string: &str) {
+        for entry in self.entries.iter_mut() {
+            entry.href_prepend(string);
         }
     }
 }
@@ -218,6 +261,29 @@ mod tests {
             desc: "Hello!".to_string(),
             path: PathBuf::from("imaginary_file.md"),
             href: "/imaginary_file.html".to_string(),
+            date: "Unknown".to_string(),
+        };
+
+        assert_eq!(page, exp);
+    }
+
+    #[test]
+    fn page_href_prepend() {
+        let mut page = Page {
+            name: "Imaginary Name".to_string(),
+            desc: "Hello!".to_string(),
+            path: PathBuf::from("in/s1/imaginary_file.md"),
+            href: "/s1/imaginary_file.html".to_string(),
+            date: "Unknown".to_string(),
+        };
+
+        page.href_prepend("/~home");
+
+        let exp = Page {
+            name: "Imaginary Name".to_string(),
+            desc: "Hello!".to_string(),
+            path: PathBuf::from("in/s1/imaginary_file.md"),
+            href: "/~home/s1/imaginary_file.html".to_string(),
             date: "Unknown".to_string(),
         };
 
@@ -348,7 +414,6 @@ impl Tree {
             root: PathBuf::from("spec2"),
             title: "WGEN Webpage".to_string(),
             append_title: false,
-            href_prepend: "".to_string(),
             entries: vec![
                 TreeEntry::Section(Section {
                     name: "D1 section".to_string(),
