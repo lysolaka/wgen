@@ -79,6 +79,8 @@ impl Subsection {
             .map(|p| Page::from_spec(p, location, root))
             .collect();
 
+        log::trace!("Found {} pages in {}", pages.len(), location.display());
+
         Self {
             name: spec.subsection.name,
             desc: spec.subsection.desc,
@@ -122,6 +124,8 @@ impl Section {
             .into_iter()
             .map(|p| SectionEntry::Page(Page::from_spec(p, location, root)));
 
+        log::trace!("Found {} pages in {}", pages.len(), location.display());
+
         let entries: Vec<SectionEntry> = subsections
             .map(|s| SectionEntry::Subsection(s))
             .chain(pages)
@@ -158,6 +162,8 @@ impl Tree {
             .pages
             .into_iter()
             .map(|p| TreeEntry::Page(Page::from_spec(p, &root, &root)));
+
+        log::trace!("Found {} pages in {}", pages.len(), root.display());
 
         let entries: Vec<TreeEntry> = sections
             .map(|s| TreeEntry::Section(s))

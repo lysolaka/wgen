@@ -36,7 +36,9 @@ impl Structure {
     }
 
     pub fn into_tree(self) -> anyhow::Result<tree::Tree> {
-        let spec = fs::read_to_string(&self.root.join("manifest.toml"))?;
+        let spec = self.root.join("manifest.toml");
+        log::debug!("Reading {}", spec.display());
+        let spec = fs::read_to_string(spec)?;
         let spec: ManifestSpec = toml::from_str(&spec)?;
 
         let sections = self
@@ -59,6 +61,7 @@ impl Structure {
 
 impl Section {
     fn read_spec(self, root: &Path) -> anyhow::Result<tree::Section> {
+        log::debug!("Reading section specfile {}", self.spec.display());
         let spec = fs::read_to_string(&self.spec)?;
         let spec: SectionSpec = toml::from_str(&spec)?;
 
@@ -83,6 +86,7 @@ impl Section {
 
 impl Subsection {
     fn read_spec(self, root: &Path) -> anyhow::Result<tree::Subsection> {
+        log::debug!("Reading subsection specfile {}", self.0.display());
         let spec = fs::read_to_string(&self.0)?;
         let spec: SubsectionSpec = toml::from_str(&spec)?;
         let location = self.0.parent().unwrap_or(Path::new(""));
