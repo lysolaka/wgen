@@ -27,7 +27,7 @@ fn main() -> anyhow::Result<()> {
     let structure = discover::Structure::collect_from(std::path::Path::new("spec2"))?;
     let tree = structure.into_tree()?;
 
-    // println!("{:#?}", tree);
+    println!("{:#?}", tree);
 
     Ok(())
 }

@@ -246,4 +246,30 @@ mod tests {
         assert_eq!(section, expect);
         Ok(())
     }
+
+    #[test]
+    fn structure_into_tree() -> anyhow::Result<()> {
+        let structure = Structure {
+            root: PathBuf::from("spec2"),
+            sections: vec![
+                Section {
+                    spec: PathBuf::from("spec2/d1/section.toml"),
+                    subsections: vec![
+                        Subsection(PathBuf::from("spec2/d1/s1/subsection.toml")),
+                        Subsection(PathBuf::from("spec2/d1/s2/subsection.toml")),
+                    ],
+                },
+                Section {
+                    spec: PathBuf::from("spec2/d2/section.toml"),
+                    subsections: vec![Subsection(PathBuf::from("spec2/d2/s1/subsection.toml"))],
+                },
+            ],
+        };
+
+        let tree = structure.into_tree()?;
+        let expect = tree::Tree::structure_into_tree_expect();
+
+        assert_eq!(tree, expect);
+        Ok(())
+    }
 }
