@@ -6,6 +6,7 @@
 use simplelog::*;
 
 mod discover;
+mod render;
 mod spec;
 mod tree;
 
@@ -23,11 +24,6 @@ fn main() -> anyhow::Result<()> {
         TerminalMode::Mixed,
         ColorChoice::Auto,
     );
-
-    let structure = discover::Structure::collect_from(std::path::Path::new("spec1"))?;
-    let tree = structure.into_tree()?;
-
-    println!("{:#?}", tree);
 
     Ok(())
 }

@@ -8,7 +8,7 @@ use chrono::{DateTime, Utc};
 
 use crate::spec::*;
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct Page {
     name: String,
     desc: String,
@@ -83,7 +83,7 @@ impl PartialEq for Page {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, serde::Serialize)]
 pub struct Subsection {
     name: String,
     desc: String,
@@ -125,8 +125,9 @@ impl Subsection {
     }
 }
 
-#[derive(Debug, PartialEq)]
-enum SectionEntry {
+#[derive(Debug, PartialEq, serde::Serialize)]
+#[serde(tag = "type")]
+pub enum SectionEntry {
     Page(Page),
     Subsection(Subsection),
 }
@@ -140,7 +141,7 @@ impl SectionEntry {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, serde::Serialize)]
 pub struct Section {
     name: String,
     desc: String,
@@ -191,8 +192,9 @@ impl Section {
     }
 }
 
-#[derive(Debug, PartialEq)]
-enum TreeEntry {
+#[derive(Debug, PartialEq, serde::Serialize)]
+#[serde(tag = "type")]
+pub enum TreeEntry {
     Page(Page),
     Section(Section),
 }
@@ -211,6 +213,7 @@ pub struct Tree {
     root: PathBuf,
     title: String,
     append_title: bool,
+    href_prepend: String,
     main_page: Page,
     entries: Vec<TreeEntry>,
 }
@@ -239,23 +242,24 @@ impl Tree {
             root,
             title: spec.title,
             append_title: spec.append_title,
+            href_prepend: spec.href_prepend,
             main_page,
             entries,
         };
 
-        if !spec.href_prepend.is_empty() {
-            s.href_prepend(&spec.href_prepend);
+        if !s.href_prepend.is_empty() {
+            s.href_prepend();
         }
 
         s
     }
 
-    fn href_prepend(&mut self, string: &str) {
+    fn href_prepend(&mut self) {
         for entry in self.entries.iter_mut() {
-            entry.href_prepend(string);
+            entry.href_prepend(&self.href_prepend);
         }
 
-        self.main_page.href_prepend(string);
+        self.main_page.href_prepend(&self.href_prepend);
     }
 }
 
@@ -446,6 +450,7 @@ impl Tree {
             root: PathBuf::from("spec2"),
             title: "WGEN Webpage".to_string(),
             append_title: false,
+            href_prepend: "/~home".to_string(),
             main_page: Page {
                 name: "WGEN Webpage".to_string(),
                 desc: "".to_string(),
