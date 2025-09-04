@@ -3,7 +3,7 @@ append_title = false
 
 main_page = "index.md"
 
-#href_prepend = "/~home"
+href_prepend = "/~home"
 
 [[page]]
 name = "First page 1.md"
