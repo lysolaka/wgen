@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ href_prepend }}/style.css">
+  </head>
+  <body>
+    <div id="container">
+      <div id="sidebar">
+      </div>
+      <div id="content">
+        {% block body %}{% endblock %}
+      </div>
+    </div>
+    <div id="footer">
+      {% block footer %}{% endblock %}
+    </div>
+    <script>
+      {{ script | indent(6, true) | trim | safe }}
+    </script>
+  </body>
+</html>

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ sec_title }}{% endblock %}
+{% block body %}
+<h1>{{ sec.name }}</h1>
+<ul>
+{% if sec.type == "Subsection" %}
+{% for page in sec.pages %}
+  <li>
+    <a href="{{ page.href }}">{{ page.name }}</a>
+{% if page.desc is not empty %}
+    <p>{{ page.desc }}</p>
+{% endif %}
+  </li>
+{% endfor %}
+{% elif sec.type == "Section" %}
+{% for entry in sec.entries %}
+{% if entry.type == "Page" %}
+  <li>
+    <a href="{{ entry.href }}">{{ entry.name }}</a>
+{% if entry.desc is not empty %}
+    <p>{{ entry.desc }}</p>
+{% endif %}
+  </li>
+{% elif entry.type == "Subsection" %}
+  <li>
+    <h3><a href="{{ entry.href }}">{{ entry.name }}</a></h3>
+{% if entry.desc is not empty %}
+    <p>{{ entry.desc }}</p>
+{% endif %}
+    <ul>
+{% for page in entry.pages %}
+      <li>
+        <a href="{{ page.href }}">{{ page.name }}</a>
+{% if page.desc is not empty %}
+        <p>{{ page.desc }}</p>
+{% endif %}
+      </li>
+{% endfor %}
+    </ul>
+  </li>
+{% endif %}
+{% endfor %}
+{% endif %}
+</ul>
+{% endblock %}
+{% block footer %}{{ footer_content}}{% endblock %}

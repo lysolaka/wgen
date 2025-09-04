@@ -1,0 +1,30 @@
+<div id="sidebar">
+  <h2><a href="{{ tree.href_prepend }}/">Main Page</a></h2>
+{% for sec in tree.entries|selectattr("type", "section") %}
+  <div class="section">
+    <div class="sec-header">
+      <button class="sec-button" onclick="toggleList(this, '.section')">&#9654;</button>
+      <h2><a href="{{ sec.href }}/">{{ sec.name }}</a></h2>
+    </div>
+    <ul>
+{% for entry in sec.entries %}
+{% if entry.type == "Subection" %}
+      <li class="subsection">
+        <div class="sub-header">
+          <button class="sub-button" onclick="toggleList(this, '.section')">&#9654;</button>
+          <h4><a href="{{ entry.href }}">{{ entry.name }}</a></h4>
+        </div>
+        <ul>
+{% for p in entry.pages %}
+          <li><a href="{{ p.href }}">{{ p.name }}</a></li>
+{% endfor %}
+        </ul>
+      </li>
+{% elif entry.type == "Page" %}
+      <li><a href="{{ entry.href }}">{{ entry.name }}</a></li>
+{% endif %}
+{% endfor %}
+    </ul>
+  </div>
+{% endfor %}
+</div>
