@@ -18,6 +18,8 @@ pub struct ManifestSpec {
     pub append_title: bool,
     pub main_page: String,
     #[serde(default)]
+    pub footer_content: String,
+    #[serde(default)]
     pub href_prepend: String,
     #[serde(rename = "page")]
     pub pages: Vec<PageSpec>,
@@ -60,6 +62,7 @@ mod tests {
             title: "WGEN Webpage".to_string(),
             append_title: false,
             main_page: "index.md".to_string(),
+            footer_content: "&copy; lysolaka. Contact me: +69 420 024 420".to_string(),
             href_prepend: "/~home".to_string(),
             pages: vec![
                 PageSpec {

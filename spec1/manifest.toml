@@ -2,6 +2,7 @@ title = "WGEN Webpage"
 append_title = false
 
 main_page = "index.md"
+footer_content = "&copy; lysolaka. Contact me: +69 420 024 420"
 
 href_prepend = "/~home"
 

@@ -214,6 +214,7 @@ pub struct Tree {
     title: String,
     append_title: bool,
     href_prepend: String,
+    footer_content: String,
     main_page: Page,
     entries: Vec<TreeEntry>,
 }
@@ -243,6 +244,7 @@ impl Tree {
             title: spec.title,
             append_title: spec.append_title,
             href_prepend: spec.href_prepend,
+            footer_content: spec.footer_content,
             main_page,
             entries,
         };
@@ -451,6 +453,7 @@ impl Tree {
             title: "WGEN Webpage".to_string(),
             append_title: false,
             href_prepend: "/~home".to_string(),
+            footer_content: "&copy; lysolaka. Contact me: +69 420 024 420".to_string(),
             main_page: Page {
                 name: "WGEN Webpage".to_string(),
                 desc: "".to_string(),
