@@ -155,7 +155,7 @@ impl Section {
         log::trace!("Found {} pages in {}", pages.len(), location.display());
 
         let entries: Vec<SectionEntry> = subsections
-            .map(|s| SectionEntry::Subsection(s))
+            .map(SectionEntry::Subsection)
             .chain(pages)
             .collect();
 
@@ -207,7 +207,7 @@ impl Tree {
         let main_page = Page::new_main(&spec.main_page, &spec.title, &root);
 
         let entries: Vec<TreeEntry> = sections
-            .map(|s| TreeEntry::Section(s))
+            .map(TreeEntry::Section)
             .chain(pages)
             .collect();
 
