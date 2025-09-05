@@ -117,6 +117,10 @@ impl Subsection {
         }
     }
 
+    pub fn iter(&self) -> std::slice::Iter<Page> {
+        self.pages.iter()
+    }
+
     fn href_prepend(&mut self, string: &str) {
         self.href.insert_str(0, string);
         for p in self.pages.iter_mut() {
@@ -182,6 +186,10 @@ impl Section {
             href,
             entries,
         }
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<SectionEntry> {
+        self.entries.iter()
     }
 
     fn href_prepend(&mut self, string: &str) {
@@ -256,6 +264,19 @@ impl Tree {
         s
     }
 
+    pub fn context(&self) -> Context<'_> {
+        Context {
+            title: &self.title,
+            append_title: self.append_title,
+            href_prepend: &self.href_prepend,
+            footer_content: &self.footer_content,
+        }
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<TreeEntry> {
+        self.entries.iter()
+    }
+
     fn href_prepend(&mut self) {
         for entry in self.entries.iter_mut() {
             entry.href_prepend(&self.href_prepend);
@@ -263,6 +284,13 @@ impl Tree {
 
         self.main_page.href_prepend(&self.href_prepend);
     }
+}
+
+pub struct Context<'a> {
+    title: &'a str,
+    append_title: bool,
+    href_prepend: &'a str,
+    footer_content: &'a str,
 }
 
 #[cfg(test)]
