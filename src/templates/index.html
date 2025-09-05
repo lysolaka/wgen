@@ -1,46 +1,54 @@
 {% extends "base.html" %}
-{% block title %}{{ sec_title }}{% endblock %}
+
+{% block title %}
+{% if ctx.append_title %}
+{{ sec.name }} | {{ ctx.title }}
+{% else %}
+{{ sec.name }}
+{% endif %}
+{% endblock %}
+
 {% block body %}
 <h1>{{ sec.name }}</h1>
 <ul>
 {% if sec.type == "Subsection" %}
-{% for page in sec.pages %}
+  {% for page in sec.pages %}
   <li>
-    <a href="{{ page.href }}">{{ page.name }}</a>
-{% if page.desc is not empty %}
+    <a href="{{ ctx.href_prepend }}{{ page.href }}">{{ page.name }}</a>
+    {% if page.desc is not empty %}
     <p>{{ page.desc }}</p>
-{% endif %}
+    {% endif %}
   </li>
-{% endfor %}
+  {% endfor %}
 {% elif sec.type == "Section" %}
-{% for entry in sec.entries %}
-{% if entry.type == "Page" %}
+  {% for entry in sec.entries %}
+    {% if entry.type == "Page" %}
   <li>
-    <a href="{{ entry.href }}">{{ entry.name }}</a>
-{% if entry.desc is not empty %}
+    <a href="{{ ctx.href_prepend }}{{ entry.href }}">{{ entry.name }}</a>
+      {% if entry.desc is not empty %}
     <p>{{ entry.desc }}</p>
-{% endif %}
+      {% endif %}
   </li>
-{% elif entry.type == "Subsection" %}
+    {% elif entry.type == "Subsection" %}
   <li>
-    <h3><a href="{{ entry.href }}">{{ entry.name }}</a></h3>
-{% if entry.desc is not empty %}
+    <h3><a href="{{ ctx.href_prepend }}{{ entry.href }}">{{ entry.name }}</a></h3>
+      {% if entry.desc is not empty %}
     <p>{{ entry.desc }}</p>
-{% endif %}
+      {% endif %}
     <ul>
-{% for page in entry.pages %}
+      {% for page in entry.pages %}
       <li>
-        <a href="{{ page.href }}">{{ page.name }}</a>
-{% if page.desc is not empty %}
+        <a href="{{ ctx.href_prepend }}{{ page.href }}">{{ page.name }}</a>
+        {% if page.desc is not empty %}
         <p>{{ page.desc }}</p>
-{% endif %}
+        {% endif %}
       </li>
-{% endfor %}
+      {% endfor %}
     </ul>
   </li>
-{% endif %}
-{% endfor %}
+    {% endif %}
+  {% endfor %}
 {% endif %}
 </ul>
 {% endblock %}
-{% block footer %}{{ footer_content}}{% endblock %}
+{% block footer %}{{ ctx.footer_content}}{% endblock %}

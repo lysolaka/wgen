@@ -68,10 +68,6 @@ impl Page {
             date,
         }
     }
-
-    fn href_prepend(&mut self, string: &str) {
-        self.href.insert_str(0, string);
-    }
 }
 
 impl PartialEq for Page {
@@ -120,13 +116,6 @@ impl Subsection {
     pub fn iter(&self) -> std::slice::Iter<Page> {
         self.pages.iter()
     }
-
-    fn href_prepend(&mut self, string: &str) {
-        self.href.insert_str(0, string);
-        for p in self.pages.iter_mut() {
-            p.href_prepend(string);
-        }
-    }
 }
 
 #[derive(Debug, PartialEq, serde::Serialize)]
@@ -134,15 +123,6 @@ impl Subsection {
 pub enum SectionEntry {
     Page(Page),
     Subsection(Subsection),
-}
-
-impl SectionEntry {
-    fn href_prepend(&mut self, string: &str) {
-        match self {
-            SectionEntry::Page(page) => page.href_prepend(string),
-            SectionEntry::Subsection(subsection) => subsection.href_prepend(string),
-        }
-    }
 }
 
 #[derive(Debug, PartialEq, serde::Serialize)]
@@ -191,13 +171,6 @@ impl Section {
     pub fn iter(&self) -> std::slice::Iter<SectionEntry> {
         self.entries.iter()
     }
-
-    fn href_prepend(&mut self, string: &str) {
-        self.href.insert_str(0, string);
-        for e in self.entries.iter_mut() {
-            e.href_prepend(string);
-        }
-    }
 }
 
 #[derive(Debug, PartialEq, serde::Serialize)]
@@ -205,15 +178,6 @@ impl Section {
 pub enum TreeEntry {
     Page(Page),
     Section(Section),
-}
-
-impl TreeEntry {
-    fn href_prepend(&mut self, string: &str) {
-        match self {
-            TreeEntry::Page(page) => page.href_prepend(string),
-            TreeEntry::Section(section) => section.href_prepend(string),
-        }
-    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -247,7 +211,7 @@ impl Tree {
             .chain(pages)
             .collect();
 
-        let mut s = Self {
+        Self {
             root,
             title: spec.title,
             append_title: spec.append_title,
@@ -255,13 +219,7 @@ impl Tree {
             footer_content: spec.footer_content,
             main_page,
             entries,
-        };
-
-        if !s.href_prepend.is_empty() {
-            s.href_prepend();
         }
-
-        s
     }
 
     pub fn context(&self) -> Context<'_> {
@@ -275,14 +233,6 @@ impl Tree {
 
     pub fn iter(&self) -> std::slice::Iter<TreeEntry> {
         self.entries.iter()
-    }
-
-    fn href_prepend(&mut self) {
-        for entry in self.entries.iter_mut() {
-            entry.href_prepend(&self.href_prepend);
-        }
-
-        self.main_page.href_prepend(&self.href_prepend);
     }
 }
 
@@ -327,29 +277,6 @@ mod tests {
             desc: "Hello!".to_string(),
             path: PathBuf::from("imaginary_file.md"),
             href: "/imaginary_file.html".to_string(),
-            date: "Unknown".to_string(),
-        };
-
-        assert_eq!(page, exp);
-    }
-
-    #[test]
-    fn page_href_prepend() {
-        let mut page = Page {
-            name: "Imaginary Name".to_string(),
-            desc: "Hello!".to_string(),
-            path: PathBuf::from("in/s1/imaginary_file.md"),
-            href: "/s1/imaginary_file.html".to_string(),
-            date: "Unknown".to_string(),
-        };
-
-        page.href_prepend("/~home");
-
-        let exp = Page {
-            name: "Imaginary Name".to_string(),
-            desc: "Hello!".to_string(),
-            path: PathBuf::from("in/s1/imaginary_file.md"),
-            href: "/~home/s1/imaginary_file.html".to_string(),
             date: "Unknown".to_string(),
         };
 
@@ -486,7 +413,7 @@ impl Tree {
                 name: "WGEN Webpage".to_string(),
                 desc: "".to_string(),
                 path: PathBuf::from("spec2/index.md"),
-                href: "/~home/".to_string(),
+                href: "/".to_string(),
                 date: "3.09.2025 16:14".to_string(),
             },
             entries: vec![
@@ -494,26 +421,26 @@ impl Tree {
                     name: "D1 section".to_string(),
                     desc: "Shit section".to_string(),
                     path: PathBuf::from("spec2/d1"),
-                    href: "/~home/d1/".to_string(),
+                    href: "/d1/".to_string(),
                     entries: vec![
                         SectionEntry::Subsection(Subsection {
                             name: "S1 subsection".to_string(),
                             desc: "Shit shit shit".to_string(),
                             path: PathBuf::from("spec2/d1/s1"),
-                            href: "/~home/d1/s1/".to_string(),
+                            href: "/d1/s1/".to_string(),
                             pages: vec![
                                 Page {
                                     name: "1 MD".to_string(),
                                     desc: "The first page here".to_string(),
                                     path: PathBuf::from("spec2/d1/s1/1.md"),
-                                    href: "/~home/d1/s1/1.html".to_string(),
+                                    href: "/d1/s1/1.html".to_string(),
                                     date: "29.08.2025 08:45".to_string(),
                                 },
                                 Page {
                                     name: "2nd md".to_string(),
                                     desc: "".to_string(),
                                     path: PathBuf::from("spec2/d1/s1/2.md"),
-                                    href: "/~home/d1/s1/2.html".to_string(),
+                                    href: "/d1/s1/2.html".to_string(),
                                     date: "29.08.2025 08:45".to_string(),
                                 },
                             ],
@@ -522,20 +449,20 @@ impl Tree {
                             name: "S2 sub".to_string(),
                             desc: "Shit".to_string(),
                             path: PathBuf::from("spec2/d1/s2"),
-                            href: "/~home/d1/s2/".to_string(),
+                            href: "/d1/s2/".to_string(),
                             pages: vec![
                                 Page {
                                     name: "1 EMDE".to_string(),
                                     desc: "A page".to_string(),
                                     path: PathBuf::from("spec2/d1/s2/1.md"),
-                                    href: "/~home/d1/s2/1.html".to_string(),
+                                    href: "/d1/s2/1.html".to_string(),
                                     date: "29.08.2025 08:45".to_string(),
                                 },
                                 Page {
                                     name: "second md".to_string(),
                                     desc: "".to_string(),
                                     path: PathBuf::from("spec2/d1/s2/2.md"),
-                                    href: "/~home/d1/s2/2.html".to_string(),
+                                    href: "/d1/s2/2.html".to_string(),
                                     date: "29.08.2025 08:45".to_string(),
                                 },
                             ],
@@ -544,14 +471,14 @@ impl Tree {
                             name: "one MD".to_string(),
                             desc: "The first page here".to_string(),
                             path: PathBuf::from("spec2/d1/1.md"),
-                            href: "/~home/d1/1.html".to_string(),
+                            href: "/d1/1.html".to_string(),
                             date: "29.08.2025 08:45".to_string(),
                         }),
                         SectionEntry::Page(Page {
                             name: "2nd markdown".to_string(),
                             desc: "".to_string(),
                             path: PathBuf::from("spec2/d1/2.md"),
-                            href: "/~home/d1/2.html".to_string(),
+                            href: "/d1/2.html".to_string(),
                             date: "29.08.2025 08:45".to_string(),
                         }),
                     ],
@@ -560,18 +487,18 @@ impl Tree {
                     name: "D2 section".to_string(),
                     desc: "Shittier section".to_string(),
                     path: PathBuf::from("spec2/d2"),
-                    href: "/~home/d2/".to_string(),
+                    href: "/d2/".to_string(),
                     entries: vec![
                         SectionEntry::Subsection(Subsection {
                             name: "d1/S1 subsection".to_string(),
                             desc: "SZAJSE".to_string(),
                             path: PathBuf::from("spec2/d2/s1"),
-                            href: "/~home/d2/s1/".to_string(),
+                            href: "/d2/s1/".to_string(),
                             pages: vec![Page {
                                 name: "1 MD".to_string(),
                                 desc: "The first and only page here".to_string(),
                                 path: PathBuf::from("spec2/d2/s1/1.md"),
-                                href: "/~home/d2/s1/1.html".to_string(),
+                                href: "/d2/s1/1.html".to_string(),
                                 date: "29.08.2025 08:45".to_string(),
                             }],
                         }),
@@ -579,14 +506,14 @@ impl Tree {
                             name: "one MD".to_string(),
                             desc: "The first page here".to_string(),
                             path: PathBuf::from("spec2/d2/1.md"),
-                            href: "/~home/d2/1.html".to_string(),
+                            href: "/d2/1.html".to_string(),
                             date: "29.08.2025 08:45".to_string(),
                         }),
                         SectionEntry::Page(Page {
                             name: "2nd markdown".to_string(),
                             desc: "".to_string(),
                             path: PathBuf::from("spec2/d2/2.md"),
-                            href: "/~home/d2/2.html".to_string(),
+                            href: "/d2/2.html".to_string(),
                             date: "29.08.2025 08:45".to_string(),
                         }),
                     ],
@@ -595,14 +522,14 @@ impl Tree {
                     name: "First page 1.md".to_string(),
                     desc: "Generic description".to_string(),
                     path: PathBuf::from("spec2/1.md"),
-                    href: "/~home/1.html".to_string(),
+                    href: "/1.html".to_string(),
                     date: "29.08.2025 08:45".to_string(),
                 }),
                 TreeEntry::Page(Page {
                     name: "Second page in the root".to_string(),
                     desc: "".to_string(),
                     path: PathBuf::from("spec2/2.md"),
-                    href: "/~home/2.html".to_string(),
+                    href: "/2.html".to_string(),
                     date: "29.08.2025 08:45".to_string(),
                 }),
             ],
