@@ -11,6 +11,10 @@ fn is_section(value: String) -> bool {
     value == "Section"
 }
 
+fn is_page(value: String) -> bool {
+    value == "Page"
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -46,6 +50,25 @@ mod tests {
 D1 section
 
 D2 section
+";
+
+        assert_eq!(res, exp);
+        Ok(())
+    }
+
+    #[test]
+    fn test_is_page() -> anyhow::Result<()> {
+        let mut env = Environment::new();
+        env.add_test("page", is_page);
+        env.add_template("test3.in", include_str!("./test_templates/test3.in"))?;
+
+        let tree = Tree::structure_into_tree_expect();
+        let tmpl = env.get_template("test3.in")?;
+        let res = tmpl.render(context! {tree})?;
+        let exp = r"
+First page 1.md
+
+Second page in the root
 ";
 
         assert_eq!(res, exp);

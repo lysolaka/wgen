@@ -1,0 +1,3 @@
+{% for p in tree.entries|selectattr("type", "page") %}
+{{ p.name }}
+{% endfor %}

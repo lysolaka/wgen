@@ -27,4 +27,7 @@
     </ul>
   </div>
 {% endfor %}
+{% for page in tree.entries|selectattr("type", "page") %}
+  <h2><a href="{{ ctx.href_prepend }}{{ page.href }}">{{ page.name }}</a></h2>
+{% endfor %}
 </div>
