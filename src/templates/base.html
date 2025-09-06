@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ href_prepend }}/style.css">
+    <link rel="stylesheet" href="{{ ctx.href_prepend }}/style.css">
   </head>
   <body>
     <div id="container">
@@ -13,9 +13,11 @@
         {% block body %}{% endblock %}
       </div>
     </div>
+    {% if ctx.footer_content is not empty %}
     <div id="footer">
       {% block footer %}{% endblock %}
     </div>
+    {% endif %}
     <script>
       {{ script | indent(6, true) | trim | safe }}
     </script>
