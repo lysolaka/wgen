@@ -1,0 +1,17 @@
+# A section has a name and an optional description. They are displayed at the top of the index
+# (table of contets) page for that section.
+[section]
+name = "Tutorials"
+desc = "Various tutorials written in hope to be useful"
+
+# Pages work in the same way as in the `manifest.toml` file.
+
+[[page]]
+name = "Learning maths"
+desc = "How to learn maths?"
+path = "maths.md"
+
+[[page]]
+name = "Toxic videogames"
+desc = "Annoying and stupid"
+path = "toxic.md"

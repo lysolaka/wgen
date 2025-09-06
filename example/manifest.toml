@@ -1,0 +1,36 @@
+# This is the title of index.html in the root.
+title = "Example Webpage"
+# Appending the title means that any page title (name), for example "Schedule"
+# will become "Schedule | Example Webpage".
+# This field is optional
+append_title = false
+
+# This will be rendered and saved as index.html in the root so that
+# going to www.example.com would display this page first.
+main_page = "landing.md"
+# The thing displayed in the footer. It's raw html, so be careful. Pages will also
+# append a string with the last modified date of said page.
+# This field is optional - in case it's missing, the footer will be disabled
+footer_content = "&copy; lysolaka. Contact me: +69 420 024 420"
+
+# This is most helpful in university scenarios, where you get a shared domain where
+# your website is hosted at www.kcir.pwr.edu.pl/~home. This field prepends the string before every
+# href. Be careful not to include the trailing slash - no normalization or checking is performed.
+# This field is optional
+href_prepend = "/~home"
+
+# Page definitions consist of:
+# * `name`, which becomes the title of said page,
+# * (optional) `desc`ription, while it does nothing for the pages in the root, for other pages
+#    it is displayed below their name in the table of contents,
+# * `path` relative to the manifest or spec file with the contents of the page.
+
+[[page]]
+name = "Schedule"
+desc = "Working hours and exceptions"
+path = "schedule.md"
+
+[[page]]
+name = "Contact Information"
+desc = "E-mails, phone numbers, addresses"
+path = "contact.md"

@@ -1,0 +1,23 @@
+# Inside a section an additional directory can be made for a subsection. Useful for grouping similar topics.
+# A subsection has a name and an optional description. They are displayed at the top of the index
+# (table of contets) page for that subsection and in the table of contets of their section.
+[section]
+name = "Linux Tutorials"
+desc = "Tutorials regarding the GNU/Linux operating system"
+
+# Pages work in the same way as in the `manifest.toml` file.
+
+[[page]]
+name = "Choosing your distribution"
+desc = "Linux distros are a mess."
+path = "distro.md"
+
+[[page]]
+name = "Why Gentoo is the best?"
+desc = "Because it is the best distro."
+path = "gentoo.md"
+
+[[page]]
+name = "Online Linux tutorials"
+desc = "Not this one tho."
+path = "tuts.md"
