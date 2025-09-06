@@ -1,0 +1,4 @@
+{% extends "base.in" %}
+{% block title %}{{ title_content }}{% endblock %}
+{% block body %}{{ body_content }}{% endblock %}
+{% block footer %}{{ footer_content }}{% endblock %}

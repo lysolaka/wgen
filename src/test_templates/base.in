@@ -1,0 +1,11 @@
+[title]
+{% block title %}{% endblock %}
+
+[body]
+{% block body %}{% endblock %}
+
+{%- if footer_content is not empty %}
+
+[footer]
+{% block footer %}{% endblock %}
+{% endif -%}

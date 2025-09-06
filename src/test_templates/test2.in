@@ -1,0 +1,3 @@
+{% for sec in tree.entries|selectattr("type", "section") %}
+{{ sec.name }}
+{% endfor %}

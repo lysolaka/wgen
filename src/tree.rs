@@ -180,7 +180,7 @@ pub enum TreeEntry {
     Section(Section),
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, serde::Serialize)]
 pub struct Tree {
     root: PathBuf,
     title: String,

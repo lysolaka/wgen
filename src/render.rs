@@ -11,6 +11,76 @@ fn is_section(value: String) -> bool {
     value == "Section"
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::tree::Tree;
+
+    use minijinja::{Environment, context};
+
+    #[test]
+    fn test_is_empty() -> anyhow::Result<()> {
+        let mut env = Environment::new();
+        env.add_test("empty", is_empty);
+        env.add_template("test1.in", include_str!("./test_templates/test1.in"))?;
+
+        let strs = ["not empty", "next one is", "", "again not", ""];
+        let tmpl = env.get_template("test1.in")?;
+        let res = tmpl.render(context! {strs})?;
+        let exp = "not emptynext one isI was empty.again notI was empty.";
+
+        assert_eq!(res, exp);
+        Ok(())
+    }
+
+    #[test]
+    fn test_is_section() -> anyhow::Result<()> {
+        let mut env = Environment::new();
+        env.add_test("section", is_section);
+        env.add_template("test2.in", include_str!("./test_templates/test2.in"))?;
+
+        let tree = Tree::structure_into_tree_expect();
+        let tmpl = env.get_template("test2.in")?;
+        let res = tmpl.render(context! {tree})?;
+        let exp = r"
+D1 section
+
+D2 section
+";
+
+        assert_eq!(res, exp);
+        Ok(())
+    }
+
+    #[test]
+    fn test_inherit() -> anyhow::Result<()> {
+        let exp = r"[title]
+Hello, world!
+
+[body]
+This is the body
+
+[footer]
+I exist!
+";
+        let mut env = Environment::new();
+        env.add_test("empty", is_empty);
+        env.add_template("base.in", include_str!("./test_templates/base.in"))?;
+        env.add_template("inherit.in", include_str!("./test_templates/inherit.in"))?;
+
+        let tmpl = env.get_template("inherit.in")?;
+        let ctx = context! {
+            title_content => "Hello, world!",
+            body_content => "This is the body",
+            footer_content => "I exist!",
+        };
+        let res = tmpl.render(ctx)?;
+
+        assert_eq!(res, exp);
+        Ok(())
+    }
+}
+
 // pub fn render_page_test(page: &Page) -> anyhow::Result<String> {
 //     let mut env = Environment::new();
 //     env.add_template("test_page", include_str!("test_page.in"))?;

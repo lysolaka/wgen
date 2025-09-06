@@ -1,0 +1,7 @@
+{% for s in strs -%}
+  {%- if s is empty -%}
+    I was empty.
+  {%- else -%}
+    {{ s }}
+  {%- endif -%}
+{% endfor -%}
