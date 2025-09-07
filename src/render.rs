@@ -15,8 +15,7 @@ impl Tree {
 
     pub fn subsections(&self) -> impl Iterator<Item = &Subsection> {
         self.sections()
-            .map(|s| s.iter())
-            .flatten()
+            .flat_map(|s| s.iter())
             .filter_map(|e| match e {
                 SectionEntry::Subsection(subsection) => Some(subsection),
                 _ => None,
@@ -31,14 +30,13 @@ impl Tree {
 
         let sec_pages = self
             .sections()
-            .map(|s| s.iter())
-            .flatten()
+            .flat_map(|s| s.iter())
             .filter_map(|e| match e {
                 SectionEntry::Page(page) => Some(page),
                 _ => None,
             });
 
-        let sub_pages = self.subsections().map(|s| s.iter()).flatten();
+        let sub_pages = self.subsections().flat_map(|s| s.iter());
 
         root_pages.chain(sec_pages).chain(sub_pages)
     }
