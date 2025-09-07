@@ -1,7 +1,9 @@
 # Contact information
 
 Phone number: +69 420 420 420
+
 E-Mail: lysolaka@gmail.com
+
 Company address: Gentoo Street 15, 69-420 London, Terrible Britain
 
 # PGP keys
