@@ -18,6 +18,14 @@ pub struct Page {
 }
 
 impl Page {
+    pub fn href(&self) -> &str {
+        &self.href
+    }
+
+    pub fn file(&self) -> &Path {
+        &self.path
+    }
+
     pub fn from_spec(spec: PageSpec, location: &Path, root: &Path) -> Self {
         let path = location.join(&spec.path);
         let href = if let Ok(p) = path.strip_prefix(root) {
@@ -233,6 +241,7 @@ impl Tree {
     }
 }
 
+#[derive(serde::Serialize)]
 pub struct Context<'a> {
     title: &'a str,
     append_title: bool,

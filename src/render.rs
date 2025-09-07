@@ -1,9 +1,14 @@
 // Copyright 2025 Szymon Sztuka (lysolaka)
 // Distributed under the terms of the GNU General Public License v3 or later
 
-use minijinja::{Environment, context};
+use markdown::{Constructs, Options, ParseOptions};
+use minijinja::{AutoEscape, Environment, context};
+use std::fs;
+use std::path::Path;
 
 use crate::tree::*;
+
+const SCRIPT_JS: &'static str = include_str!("./templates/script.js");
 
 impl Tree {
     pub fn sections(&self) -> impl Iterator<Item = &Section> {
@@ -40,6 +45,63 @@ impl Tree {
 
         root_pages.chain(sec_pages).chain(sub_pages)
     }
+
+    pub fn render_pages(&self, outdir: &Path) -> anyhow::Result<()> {
+        let mut env = Environment::new();
+        env.set_auto_escape_callback(|_| AutoEscape::None);
+        env.add_test("page", is_page);
+        env.add_test("section", is_section);
+        env.add_test("empty", is_empty);
+        env.add_template("base.html", include_str!("./templates/base.html"))?;
+        env.add_template("content.html", include_str!("./templates/content.html"))?;
+
+        let md_opts = Options {
+            parse: ParseOptions {
+                constructs: Constructs {
+                    math_flow: true,
+                    math_text: true,
+                    ..Constructs::gfm()
+                },
+                ..ParseOptions::gfm()
+            },
+            ..Options::gfm()
+        };
+
+        let page_count = self.pages().count();
+        for (i, p) in self.pages().enumerate() {
+            // can unwrap because all hrefs start with a slash
+            let outpath = Path::new(p.href()).strip_prefix("/").unwrap();
+            let outpath = outdir.join(outpath);
+            let outdir = outpath.parent().unwrap_or_else(|| Path::new(""));
+            fs::create_dir_all(outdir)?;
+
+            log::debug!("[{}/{}] Reading {}", i + 1, page_count, p.file().display());
+
+            let page_content = fs::read_to_string(p.file())?;
+
+            log::info!(
+                "[{}/{}] Rendering {} to {}",
+                i + 1,
+                page_count,
+                p.file().display(),
+                outpath.display()
+            );
+
+            let page_content = match markdown::to_html_with_options(&page_content, &md_opts) {
+                Ok(s) => s,
+                Err(e) => anyhow::bail!("{}", e),
+            };
+
+            let outfile = fs::File::create(outpath)?;
+
+            let tmpl = env.get_template("content.html")?;
+            tmpl.render_to_write(
+                context! { ctx => self.context(), page => p, script => SCRIPT_JS, page_content},
+                outfile,
+            )?;
+        }
+        Ok(())
+    }
 }
 
 fn is_empty(value: String) -> bool {
@@ -57,7 +119,6 @@ fn is_page(value: String) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tree::Tree;
 
     use minijinja::{Environment, context};
 

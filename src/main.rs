@@ -25,5 +25,9 @@ fn main() -> anyhow::Result<()> {
         ColorChoice::Auto,
     );
 
+    let structure = discover::Structure::collect_from(std::path::Path::new("example/"))?;
+    let tree = structure.into_tree()?;
+    tree.render_pages(std::path::Path::new("/tmp/wgen_out"))?;
+
     Ok(())
 }
