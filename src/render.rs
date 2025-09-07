@@ -6,6 +6,23 @@ use minijinja::{Environment, context};
 use crate::tree::*;
 
 impl Tree {
+    pub fn sections(&self) -> impl Iterator<Item = &Section> {
+        self.iter().filter_map(|e| match e {
+            TreeEntry::Section(section) => Some(section),
+            _ => None,
+        })
+    }
+
+    pub fn subsections(&self) -> impl Iterator<Item = &Subsection> {
+        self.sections()
+            .map(|s| s.iter())
+            .flatten()
+            .filter_map(|e| match e {
+                SectionEntry::Subsection(subsection) => Some(subsection),
+                _ => None,
+            })
+    }
+
     pub fn pages(&self) -> impl Iterator<Item = &Page> {
         let root_pages = self.iter().filter_map(|e| match e {
             TreeEntry::Page(page) => Some(page),
@@ -13,29 +30,15 @@ impl Tree {
         });
 
         let sec_pages = self
-            .iter()
-            .filter_map(|e| match e {
-                TreeEntry::Section(section) => Some(section.iter()),
-                _ => None,
-            })
+            .sections()
+            .map(|s| s.iter())
             .flatten()
             .filter_map(|e| match e {
                 SectionEntry::Page(page) => Some(page),
                 _ => None,
             });
 
-        let sub_pages = self
-            .iter()
-            .filter_map(|e| match e {
-                TreeEntry::Section(section) => Some(section.iter()),
-                _ => None,
-            })
-            .flatten()
-            .filter_map(|e| match e {
-                SectionEntry::Subsection(subsection) => Some(subsection.iter()),
-                _ => None,
-            })
-            .flatten();
+        let sub_pages = self.subsections().map(|s| s.iter()).flatten();
 
         root_pages.chain(sec_pages).chain(sub_pages)
     }
@@ -59,6 +62,24 @@ mod tests {
     use crate::tree::Tree;
 
     use minijinja::{Environment, context};
+
+    #[test]
+    fn sections_iter() {
+        let tree = Tree::example_tree();
+        let sections: Vec<&str> = tree.sections().map(|s| s.name()).collect();
+        let exp = vec!["Projects", "Tutorials"];
+
+        assert_eq!(sections, exp);
+    }
+
+    #[test]
+    fn subsections_iter() {
+        let tree = Tree::structure_into_tree_expect();
+        let subsections: Vec<&str> = tree.subsections().map(|s| s.name()).collect();
+        let exp = vec!["S1 subsection", "S2 sub", "d1/S1 subsection"];
+
+        assert_eq!(subsections, exp);
+    }
 
     #[test]
     fn pages_iter() {

@@ -290,6 +290,10 @@ impl Page {
 
 #[cfg(test)]
 impl Subsection {
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
     pub fn subsection_read_spec1_expected() -> Self {
         Self {
             name: "subsection s1".to_string(),
@@ -334,6 +338,10 @@ impl Subsection {
 
 #[cfg(test)]
 impl Section {
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
     pub fn section_read_spec_expected() -> Self {
         Self {
             name: "D1 section".to_string(),
