@@ -3,6 +3,44 @@
 
 use minijinja::{Environment, context};
 
+use crate::tree::*;
+
+impl Tree {
+    pub fn pages(&self) -> impl Iterator<Item = &Page> {
+        let root_pages = self.iter().filter_map(|e| match e {
+            TreeEntry::Page(page) => Some(page),
+            _ => None,
+        });
+
+        let sec_pages = self
+            .iter()
+            .filter_map(|e| match e {
+                TreeEntry::Section(section) => Some(section.iter()),
+                _ => None,
+            })
+            .flatten()
+            .filter_map(|e| match e {
+                SectionEntry::Page(page) => Some(page),
+                _ => None,
+            });
+
+        let sub_pages = self
+            .iter()
+            .filter_map(|e| match e {
+                TreeEntry::Section(section) => Some(section.iter()),
+                _ => None,
+            })
+            .flatten()
+            .filter_map(|e| match e {
+                SectionEntry::Subsection(subsection) => Some(subsection.iter()),
+                _ => None,
+            })
+            .flatten();
+
+        root_pages.chain(sec_pages).chain(sub_pages)
+    }
+}
+
 fn is_empty(value: String) -> bool {
     value.is_empty()
 }
@@ -21,6 +59,26 @@ mod tests {
     use crate::tree::Tree;
 
     use minijinja::{Environment, context};
+
+    #[test]
+    fn pages_iter() {
+        let tree = Tree::example_tree();
+        let pages: Vec<&str> = tree.pages().map(|p| p.name()).collect();
+        let expect = vec![
+            "Schedule",
+            "Contact Information",
+            "Catalyst improvements",
+            "wgen - the very \"limited\" website generator",
+            "Gentoo + LLVM",
+            "Learning maths",
+            "Toxic videogames",
+            "Choosing your distribution",
+            "Why Gentoo is the best?",
+            "Online Linux tutorials",
+        ];
+
+        assert_eq!(pages, expect);
+    }
 
     #[test]
     fn test_is_empty() -> anyhow::Result<()> {
