@@ -1,7 +1,7 @@
 # Inside a section an additional directory can be made for a subsection. Useful for grouping similar topics.
 # A subsection has a name and an optional description. They are displayed at the top of the index
 # (table of contets) page for that subsection and in the table of contets of their section.
-[section]
+[subsection]
 name = "Linux Tutorials"
 desc = "Tutorials regarding the GNU/Linux operating system"
 
