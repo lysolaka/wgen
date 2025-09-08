@@ -4,7 +4,7 @@
   <div class="section">
     <div class="sec-header">
       <button class="sec-button" onclick="toggleList(this, '.section')">&#9654;</button>
-      <h2><a href="{{ ctx.href_prepend}}{{ sec.href }}/">{{ sec.name }}</a></h2>
+      <h2><a href="{{ ctx.href_prepend}}{{ sec.href }}">{{ sec.name }}</a></h2>
     </div>
     <ul>
   {% for entry in sec.entries %}

@@ -5,10 +5,12 @@ use markdown::{Constructs, Options, ParseOptions};
 use minijinja::{AutoEscape, Environment, context};
 use std::fs;
 use std::path::Path;
+use std::io::prelude::*;
 
 use crate::tree::*;
 
 const SCRIPT_JS: &'static str = include_str!("./templates/script.js");
+const STYLE_CSS: &'static str = include_str!("./templates/style.css");
 
 impl Tree {
     pub fn sections(&self) -> impl Iterator<Item = &Section> {
@@ -46,7 +48,73 @@ impl Tree {
         root_pages.chain(sec_pages).chain(sub_pages)
     }
 
-    pub fn render_sections(&self, outdir: &Path, env: &Environment) -> anyhow::Result<()> {
+    pub fn render(&self, outdir: &Path) -> anyhow::Result<()> {
+        let md_opts = Options {
+            parse: ParseOptions {
+                constructs: Constructs {
+                    math_flow: true,
+                    math_text: true,
+                    ..Constructs::gfm()
+                },
+                ..ParseOptions::gfm()
+            },
+            ..Options::gfm()
+        };
+
+        let mut env = Environment::new();
+        env.set_auto_escape_callback(|_| AutoEscape::None);
+        env.add_test("page", is_page);
+        env.add_test("section", is_section);
+        env.add_test("empty", is_empty);
+        env.add_template("base.html", include_str!("./templates/base.html"))?;
+        env.add_template("sec_index.html", include_str!("./templates/sec_index.html"))?;
+        env.add_template("sub_index.html", include_str!("./templates/sub_index.html"))?;
+        env.add_template("sidebar.html", include_str!("./templates/sidebar.html"))?;
+        env.add_template("content.html", include_str!("./templates/content.html"))?;
+
+        self.render_sections(outdir, &env)?;
+        self.render_subsections(outdir, &env)?;
+        self.render_pages(outdir, &env)?;
+
+        // render sidebar
+        let outpath = outdir.join("sidebar.html");
+        log::info!("Rendering sidebar to {}", outpath.display());
+        let outfile = fs::File::create(outpath)?;
+        let tmpl = env.get_template("sidebar.html")?;
+        tmpl.render_to_write(context! { tree => self, ctx => self.context() }, outfile)?;
+
+        // render the main page
+        let outpath = outdir.join("index.html");
+        log::trace!(
+            "Reading main page contents from {}",
+            self.main_page().file().display()
+        );
+        let page_content = fs::read_to_string(self.main_page().file())?;
+
+        let page_content = match markdown::to_html_with_options(&page_content, &md_opts) {
+            Ok(s) => s,
+            Err(e) => anyhow::bail!("{}", e),
+        };
+
+        log::info!("Rendering main page to {}", outpath.display());
+        let outfile = fs::File::create(outpath)?;
+
+        let tmpl = env.get_template("content.html")?;
+        tmpl.render_to_write(
+                context! { ctx => self.context(), page => self.main_page(), script => SCRIPT_JS, page_content },
+                outfile,
+            )?;
+
+        // todo make style.css a template as well (allow for themes)
+        let outpath = outdir.join("style.css");
+        log::info!("Writing style.css to {}", outpath.display());
+        let mut outfile = fs::File::create(outpath)?;
+        outfile.write_all(STYLE_CSS.as_bytes())?;
+
+        Ok(())
+    }
+
+    fn render_sections(&self, outdir: &Path, env: &Environment) -> anyhow::Result<()> {
         let tmpl = env.get_template("sec_index.html")?;
 
         let sec_count = self.sections().count();
@@ -58,7 +126,12 @@ impl Tree {
             let outdir = outpath.parent().unwrap_or_else(|| Path::new(""));
             fs::create_dir_all(outdir)?;
 
-            log::info!("[{}/{}] Rendering section index to {}", i+1, sec_count, outpath.display());
+            log::info!(
+                "[{}/{}] Rendering section index to {}",
+                i + 1,
+                sec_count,
+                outpath.display()
+            );
 
             let outfile = fs::File::create(outpath)?;
 
@@ -71,7 +144,7 @@ impl Tree {
         Ok(())
     }
 
-    pub fn render_subsections(&self, outdir: &Path, env: &Environment) -> anyhow::Result<()> {
+    fn render_subsections(&self, outdir: &Path, env: &Environment) -> anyhow::Result<()> {
         let tmpl = env.get_template("sub_index.html")?;
 
         let sub_count = self.subsections().count();
@@ -83,7 +156,12 @@ impl Tree {
             let outdir = outpath.parent().unwrap_or_else(|| Path::new(""));
             fs::create_dir_all(outdir)?;
 
-            log::info!("[{}/{}] Rendering subsection index to {}", i+1, sub_count, outpath.display());
+            log::info!(
+                "[{}/{}] Rendering subsection index to {}",
+                i + 1,
+                sub_count,
+                outpath.display()
+            );
 
             let outfile = fs::File::create(outpath)?;
 
@@ -96,7 +174,7 @@ impl Tree {
         Ok(())
     }
 
-    pub fn render_pages(&self, outdir: &Path, env: &Environment) -> anyhow::Result<()> {
+    fn render_pages(&self, outdir: &Path, env: &Environment) -> anyhow::Result<()> {
         let md_opts = Options {
             parse: ParseOptions {
                 constructs: Constructs {

@@ -235,6 +235,10 @@ impl Tree {
         }
     }
 
+    pub fn main_page(&self) -> &Page {
+        &self.main_page
+    }
+
     pub fn context(&self) -> Context<'_> {
         Context {
             title: &self.title,

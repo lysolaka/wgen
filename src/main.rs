@@ -41,9 +41,7 @@ fn main() -> anyhow::Result<()> {
 
     let structure = discover::Structure::collect_from(std::path::Path::new("example/"))?;
     let tree = structure.into_tree()?;
-    tree.render_pages(std::path::Path::new("/tmp/wgen_out"), &env)?;
-    tree.render_subsections(std::path::Path::new("/tmp/wgen_out"), &env)?;
-    tree.render_sections(std::path::Path::new("/tmp/wgen_out"), &env)?;
+    tree.render(std::path::Path::new("/tmp/wgen_out"))?;
 
     Ok(())
 }
