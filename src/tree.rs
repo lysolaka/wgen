@@ -88,6 +88,7 @@ impl PartialEq for Page {
 }
 
 #[derive(Debug, PartialEq, serde::Serialize)]
+#[serde(tag = "type")]
 pub struct Subsection {
     name: String,
     desc: String,
@@ -121,6 +122,10 @@ impl Subsection {
         }
     }
 
+    pub fn href(&self) -> &str {
+        &self.href
+    }
+
     pub fn iter(&self) -> std::slice::Iter<Page> {
         self.pages.iter()
     }
@@ -134,6 +139,7 @@ pub enum SectionEntry {
 }
 
 #[derive(Debug, PartialEq, serde::Serialize)]
+#[serde(tag = "type")]
 pub struct Section {
     name: String,
     desc: String,
@@ -174,6 +180,10 @@ impl Section {
             href,
             entries,
         }
+    }
+
+    pub fn href(&self) -> &str {
+        &self.href
     }
 
     pub fn iter(&self) -> std::slice::Iter<SectionEntry> {

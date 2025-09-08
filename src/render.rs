@@ -46,15 +46,51 @@ impl Tree {
         root_pages.chain(sec_pages).chain(sub_pages)
     }
 
-    pub fn render_pages(&self, outdir: &Path) -> anyhow::Result<()> {
-        let mut env = Environment::new();
-        env.set_auto_escape_callback(|_| AutoEscape::None);
-        env.add_test("page", is_page);
-        env.add_test("section", is_section);
-        env.add_test("empty", is_empty);
-        env.add_template("base.html", include_str!("./templates/base.html"))?;
-        env.add_template("content.html", include_str!("./templates/content.html"))?;
+    pub fn render_indexes(&self, outdir: &Path, env: &Environment) -> anyhow::Result<()> {
+        let tmpl = env.get_template("index.html")?;
 
+        let sec_count = self.sections().count();
+        for (i, s) in self.sections().enumerate() {
+            let outpath = {
+                let p = Path::new(s.href()).strip_prefix("/").unwrap();
+                outdir.join(p).join("index.html")
+            };
+            let outdir = outpath.parent().unwrap_or_else(|| Path::new(""));
+            fs::create_dir_all(outdir)?;
+
+            log::info!("[{}/{}] Rendering section index to {}", i+1, sec_count, outpath.display());
+
+            let outfile = fs::File::create(outpath)?;
+
+            tmpl.render_to_write(
+                context! { ctx => self.context(), sec => s, script => SCRIPT_JS },
+                outfile,
+            )?;
+        }
+
+        let sub_count = self.subsections().count();
+        for (i, s) in self.subsections().enumerate() {
+            let outpath = {
+                let p = Path::new(s.href()).strip_prefix("/").unwrap();
+                outdir.join(p).join("index.html")
+            };
+            let outdir = outpath.parent().unwrap_or_else(|| Path::new(""));
+            fs::create_dir_all(outdir)?;
+
+            log::info!("[{}/{}] Rendering subsection index to {}", i+1, sub_count, outpath.display());
+
+            let outfile = fs::File::create(outpath)?;
+
+            tmpl.render_to_write(
+                context! { ctx => self.context(), sec => s, script => SCRIPT_JS },
+                outfile,
+            )?;
+        }
+
+        Ok(())
+    }
+
+    pub fn render_pages(&self, outdir: &Path, env: &Environment) -> anyhow::Result<()> {
         let md_opts = Options {
             parse: ParseOptions {
                 constructs: Constructs {
@@ -67,6 +103,8 @@ impl Tree {
             ..Options::gfm()
         };
 
+        let tmpl = env.get_template("content.html")?;
+
         let page_count = self.pages().count();
         for (i, p) in self.pages().enumerate() {
             // can unwrap because all hrefs start with a slash
@@ -75,7 +113,7 @@ impl Tree {
             let outdir = outpath.parent().unwrap_or_else(|| Path::new(""));
             fs::create_dir_all(outdir)?;
 
-            log::debug!("[{}/{}] Reading {}", i + 1, page_count, p.file().display());
+            log::trace!("[{}/{}] Reading {}", i + 1, page_count, p.file().display());
 
             let page_content = fs::read_to_string(p.file())?;
 
@@ -94,7 +132,6 @@ impl Tree {
 
             let outfile = fs::File::create(outpath)?;
 
-            let tmpl = env.get_template("content.html")?;
             tmpl.render_to_write(
                 context! { ctx => self.context(), page => p, script => SCRIPT_JS, page_content},
                 outfile,
@@ -104,15 +141,15 @@ impl Tree {
     }
 }
 
-fn is_empty(value: String) -> bool {
+pub fn is_empty(value: String) -> bool {
     value.is_empty()
 }
 
-fn is_section(value: String) -> bool {
+pub fn is_section(value: String) -> bool {
     value == "Section"
 }
 
-fn is_page(value: String) -> bool {
+pub fn is_page(value: String) -> bool {
     value == "Page"
 }
 
