@@ -46,8 +46,8 @@ impl Tree {
         root_pages.chain(sec_pages).chain(sub_pages)
     }
 
-    pub fn render_indexes(&self, outdir: &Path, env: &Environment) -> anyhow::Result<()> {
-        let tmpl = env.get_template("index.html")?;
+    pub fn render_sections(&self, outdir: &Path, env: &Environment) -> anyhow::Result<()> {
+        let tmpl = env.get_template("sec_index.html")?;
 
         let sec_count = self.sections().count();
         for (i, s) in self.sections().enumerate() {
@@ -67,6 +67,12 @@ impl Tree {
                 outfile,
             )?;
         }
+
+        Ok(())
+    }
+
+    pub fn render_subsections(&self, outdir: &Path, env: &Environment) -> anyhow::Result<()> {
+        let tmpl = env.get_template("sub_index.html")?;
 
         let sub_count = self.subsections().count();
         for (i, s) in self.subsections().enumerate() {

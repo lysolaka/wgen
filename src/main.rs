@@ -35,13 +35,15 @@ fn main() -> anyhow::Result<()> {
     env.add_test("section", is_section);
     env.add_test("empty", is_empty);
     env.add_template("base.html", include_str!("./templates/base.html"))?;
-    env.add_template("index.html", include_str!("./templates/index.html"))?;
+    env.add_template("sec_index.html", include_str!("./templates/sec_index.html"))?;
+    env.add_template("sub_index.html", include_str!("./templates/sub_index.html"))?;
     env.add_template("content.html", include_str!("./templates/content.html"))?;
 
     let structure = discover::Structure::collect_from(std::path::Path::new("example/"))?;
     let tree = structure.into_tree()?;
     tree.render_pages(std::path::Path::new("/tmp/wgen_out"), &env)?;
-    tree.render_indexes(std::path::Path::new("/tmp/wgen_out"), &env)?;
+    tree.render_subsections(std::path::Path::new("/tmp/wgen_out"), &env)?;
+    tree.render_sections(std::path::Path::new("/tmp/wgen_out"), &env)?;
 
     Ok(())
 }

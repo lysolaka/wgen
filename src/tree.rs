@@ -88,7 +88,6 @@ impl PartialEq for Page {
 }
 
 #[derive(Debug, PartialEq, serde::Serialize)]
-#[serde(tag = "type")]
 pub struct Subsection {
     name: String,
     desc: String,
@@ -139,7 +138,6 @@ pub enum SectionEntry {
 }
 
 #[derive(Debug, PartialEq, serde::Serialize)]
-#[serde(tag = "type")]
 pub struct Section {
     name: String,
     desc: String,
