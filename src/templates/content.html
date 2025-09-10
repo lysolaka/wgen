@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}
-{% if ctx.append_title %}
+{% block title -%}
+{%- if ctx.append_title -%}
 {{ page.name }} | {{ ctx.title }}
-{% else %}
+{%- else -%}
 {{ page.name }}
-{% endif %}
-{% endblock %}
+{%- endif -%}
+{%- endblock %}
 
-{% block body %}{{ page_content }}{% endblock %}
+{% block body %}{{ page_content | indent(8, true) | trim }}{% endblock %}
 
 {% block footer %}{{ ctx.footer_content }} Last modified: {{ page.date }}{% endblock %}

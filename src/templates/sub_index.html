@@ -1,24 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}
-{% if ctx.append_title %}
+{% block title -%}
+{%- if ctx.append_title -%}
 {{ sec.name }} | {{ ctx.title }}
-{% else %}
+{%- else -%}
 {{ sec.name }}
-{% endif %}
-{% endblock %}
+{%- endif -%}
+{%- endblock %}
 
-{% block body %}
-<h1>{{ sec.name }}</h1>
-<ul>
-  {% for page in sec.pages %}
-  <li>
-    <a href="{{ ctx.href_prepend }}{{ page.href }}">{{ page.name }}</a>
-    {% if page.desc is not empty %}
-    <p>{{ page.desc }}</p>
-    {% endif %}
-  </li>
-  {% endfor %}
-</ul>
-{% endblock %}
+{% block body %}<h1>{{ sec.name }}</h1>
+        <ul>
+          {%- for page in sec.pages %}
+          <li>
+            <a href="{{ ctx.href_prepend }}{{ page.href }}">{{ page.name }}</a>
+            {%- if page.desc is not empty %}
+            <p>{{ page.desc }}</p>
+            {%- endif %}
+          </li>
+          {%- endfor %}
+        </ul>
+{%- endblock %}
 {% block footer %}{{ ctx.footer_content}}{% endblock %}

@@ -1,43 +1,42 @@
 {% extends "base.html" %}
 
-{% block title %}
-{% if ctx.append_title %}
+{% block title -%}
+{%- if ctx.append_title -%}
 {{ sec.name }} | {{ ctx.title }}
-{% else %}
+{%- else -%}
 {{ sec.name }}
-{% endif %}
-{% endblock %}
+{%- endif -%}
+{%- endblock %}
 
-{% block body %}
-<h1>{{ sec.name }}</h1>
-<ul>
-{% for entry in sec.entries %}
-  {% if entry.type == "Page" %}
-  <li>
-    <a href="{{ ctx.href_prepend }}{{ entry.href }}">{{ entry.name }}</a>
-    {% if entry.desc is not empty %}
-    <p>{{ entry.desc }}</p>
-    {% endif %}
-  </li>
-  {% elif entry.type == "Subsection" %}
-  <li>
-    <h3><a href="{{ ctx.href_prepend }}{{ entry.href }}">{{ entry.name }}</a></h3>
-    {% if entry.desc is not empty %}
-    <p>{{ entry.desc }}</p>
-    {% endif %}
-    <ul>
-    {% for page in entry.pages %}
-      <li>
-        <a href="{{ ctx.href_prepend }}{{ page.href }}">{{ page.name }}</a>
-      {% if page.desc is not empty %}
-        <p>{{ page.desc }}</p>
-      {% endif %}
-      </li>
-    {% endfor %}
-    </ul>
-  </li>
-  {% endif %}
-{% endfor %}
-</ul>
-{% endblock %}
+{% block body %}<h1>{{ sec.name }}</h1>
+        <ul>
+        {%- for entry in sec.entries %}
+          {%- if entry.type == "Page" %}
+          <li>
+            <a href="{{ ctx.href_prepend }}{{ entry.href }}">{{ entry.name }}</a>
+            {%- if entry.desc is not empty %}
+            <p>{{ entry.desc }}</p>
+            {%- endif %}
+          </li>
+          {%- elif entry.type == "Subsection" %}
+          <li>
+            <h3><a href="{{ ctx.href_prepend }}{{ entry.href }}">{{ entry.name }}</a></h3>
+            {%- if entry.desc is not empty %}
+            <p>{{ entry.desc }}</p>
+            {%- endif %}
+            <ul>
+            {%- for page in entry.pages %}
+              <li>
+                <a href="{{ ctx.href_prepend }}{{ page.href }}">{{ page.name }}</a>
+              {%- if page.desc is not empty %}
+                <p>{{ page.desc }}</p>
+              {%- endif %}
+              </li>
+            {%- endfor %}
+            </ul>
+          </li>
+          {%- endif %}
+        {%- endfor %}
+        </ul>
+{%- endblock %}
 {% block footer %}{{ ctx.footer_content}}{% endblock %}
