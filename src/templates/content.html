@@ -7,6 +7,8 @@
 {%- endif -%}
 {%- endblock %}
 
-{% block body %}{{ page_content | indent(8, true) | trim }}{% endblock %}
+{% block body %}
+{{ page_content | trim }}
+{%- endblock %}
 
 {% block footer %}{{ ctx.footer_content }} Last modified: {{ page.date }}{% endblock %}
