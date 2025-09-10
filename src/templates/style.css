@@ -17,6 +17,13 @@ body {
   padding: 0;
 }
 
+#sidebar a {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 #sidebar ul {
   list-style-type: none;
 }

@@ -8,6 +8,9 @@ fetch("/sidebar.html")
     const current = window.location.pathname;
 
     document.querySelectorAll("#sidebar a").forEach(link => {
+      // Add a tooltip
+      link.setAttribute("title", link.textContent.trim());
+
       if (link.getAttribute("href") === current) {
         // Highlight the currently open item
         link.classList.add("active");
